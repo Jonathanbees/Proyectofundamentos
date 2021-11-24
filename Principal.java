@@ -4,13 +4,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.io.*;
 
 public class Principal {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException  {
+        
         Scanner scan = new Scanner(System.in);
+        DateTimeFormatter dtf4 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+        FileWriter ficherovehiculo = new FileWriter("Vehiculos-parqueados.txt");
+        PrintWriter archivoprint = new PrintWriter(ficherovehiculo);
+        System.out.println("Ingrese la cantidad de pisos del parqueadero: ");
         int cantipisos = scan.nextInt();
+        System.out.println("Ingrese la cantidad de espacios del parqueadero: ");
         int cantiespacios = scan.nextInt();
+        System.out.println("Ingrese el valor de parqueo por hora para las motos: ");
+        long valormoto = scan.nextLong();
+        System.out.println("Ingrese el valor de parqueo por hora par los carros: ");
+        long valorcarro = scan.nextLong();
+        
+        
         int pisouser;
         int espaciouser;
         int numeroIngresado;
@@ -20,7 +36,11 @@ public class Principal {
         String marca;
         String color;
         int valor;
+        String tipovehiculo;
         String colorbusqueda;
+        String fechahora;
+        int pisosensor;
+        int espaciosensor;
 
         Vehiculo[][] vehiculos = new Vehiculo[cantipisos][cantiespacios];
 
@@ -63,8 +83,11 @@ public class Principal {
 
                         System.out.println("Ingrese el color del nuevo vehiculo: ");
                         color = scan.next();
+                        
+                        System.out.println("Ingrese el tipo de vehiculo a parquear (moto o carro)");
+                        tipovehiculo = scan.next();
 
-                        Vehiculo nuevoVehiculo = new Vehiculo(placa, marca, color);
+                        Vehiculo nuevoVehiculo = new Vehiculo(placa, marca, color, tipovehiculo);
                         Vehiculo.vehiculos[pisouser][espaciouser] = nuevoVehiculo;
                         Sensor.sensores[pisouser][espaciouser].setEstado(1);
 
@@ -90,8 +113,11 @@ public class Principal {
 
                         System.out.println("Ingrese el valor del vehículo");
                         valor = scan.nextInt();
+                        
+                        System.out.println("Ingrese el tipo de vehiculo a parquear (moto o carro)");
+                        tipovehiculo = scan.next();
 
-                        Vehiculo nuevoVehiculo = new Vehiculo(placa, marca, color, valor);
+                        Vehiculo nuevoVehiculo = new Vehiculo(placa, marca, color, valor, tipovehiculo);
                         Vehiculo.vehiculos[pisousuario][espaciousuario] = nuevoVehiculo;
                         Sensor.sensores[pisousuario][espaciousuario].setEstado(1);
 
@@ -131,7 +157,6 @@ public class Principal {
                                     System.out.println(Vehiculo.vehiculos[i][j].toString());
                                 }
                             }
-
                         }
                     }
                     break;
@@ -160,13 +185,51 @@ public class Principal {
                         Vehiculo vehiculo = vehiculoslista.get(i);
                         System.out.println(vehiculo.toString());
                     }
-                break;    
+                    break;
+                case 10:
+                    System.out.println("Seleccione un piso y espacio en el que desea desactivar el sensor");
+                    System.out.println("Piso: ");
+                    pisosensor = scan.nextInt();
+                    System.out.println("Espacio: ");
+                    espaciosensor = scan.nextInt();
+                    Sensor.sensores[pisosensor][espaciosensor].setEstado(0);
+
+                    DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+                    LocalDateTime myDateObj1 = LocalDateTime.now();
+                    String formattedDate1 = myDateObj1.format(dtf2);
+                    String fechatempo = formattedDate1;
+                     long diff = ChronoUnit.MINUTES.between(vehiculos[pisosensor][espaciosensor].getFecha(), myDateObj1);
+                     System.out.println("Los minutos transcurridos son: "+diff + " para el vehiculo: "+ vehiculos[pisosensor][espaciosensor].getTipo());
+                     
+                     if(vehiculos[pisosensor][espaciosensor].getTipo().equals("Carro") || vehiculos[pisosensor][espaciosensor].getTipo().equals("carro")){
+                         if(diff<=30){
+                             System.out.println("Hay un descuento del 50% si el tiempo transcurrido es inferior o igual a 30 minutos");
+                             long totalcarro = valorcarro/2;
+                             System.out.println("El valor a pagar por el tiempo del carro parqueado es: "+ totalcarro);
+                         }else{
+                             long totalcarro = valorcarro*(diff/60);
+                             System.out.println("El valor a pagar por el tiempo del carro parqueado es: "+ totalcarro);
+                         }
+                     } else if (vehiculos[pisosensor][espaciosensor].getTipo().equals("Moto") || vehiculos[pisosensor][espaciosensor].getTipo().equals("moto")){
+                         if(diff<=30){
+                             System.out.println("Solo habrá un descuento en el valor de parqueo si el tiempo transcurrido son 30 minutos o menos");
+                             long totalmoto = valormoto/2;
+                             System.out.println("El valor a pagar por el tiempo del carro parqueado es: "+ totalmoto);
+                         }else{
+                             long totalmoto = valormoto*(diff/60);
+                             System.out.println("El valor a pagar por el tiempo del carro parqueado es: "+ totalmoto);
+                         }
+                     }
+                    vehiculos[pisosensor][espaciosensor] = null;
+                     break;
+                case 11: 
+                    archivoprint.println(Vehiculo.toStringVehiculos());
+                    ficherovehiculo.close();
+                    break;
                 default:
                     System.out.println("Comando incorrecto");
-
+                   
             }
-
         }
-
     }
 }

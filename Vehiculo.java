@@ -1,5 +1,6 @@
-
 package ProyectoFundamentos;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 public class Vehiculo {
     private String placa; 
     private String marca;
@@ -8,6 +9,11 @@ public class Vehiculo {
     public static Vehiculo vehiculos[][];
     public static int cantidad = 0;
     public static int tamaño;
+    private String tipo;
+    private LocalDateTime fecha;
+    static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+    LocalDateTime myDateObj = LocalDateTime.now();
+    String formattedDate = myDateObj.format(dtf);
 
     public String getPlaca() {
         return placa;
@@ -48,25 +54,46 @@ public class Vehiculo {
     public static void setCantidad(int cantidad) {
         Vehiculo.cantidad = cantidad;
     }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public LocalDateTime getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDateTime fecha) {
+        this.fecha = fecha;
+    }
+    
     
     public Vehiculo(){
         
     }
-    public Vehiculo(String p, String m, String c){
+    public Vehiculo(String p, String m, String c, String t){
         this.placa= p;
         this.marca = m;
         this.color = c;
+        this.tipo = t;
+        this.fecha = myDateObj;
     }
-    public Vehiculo(String p, String m, String c, int v){
+    public Vehiculo(String p, String m, String c, int v, String t){
     this.placa= p;
     this.marca = m;
     this.color = c;
     this.valorComercial = v;
+    this.tipo = t;
     cantidad = cantidad + 1;
+    this.fecha = myDateObj;
     }
 
     public static String toString(Vehiculo vehiculo) {
-        return "Vehiculo{" + "placa=" + vehiculo.placa + ", marca=" + vehiculo.marca + ", color=" + vehiculo.color + ", valorComercial=" + vehiculo.valorComercial + '}';
+        return "Vehiculo{" + "placa=" + vehiculo.placa + ", marca=" + vehiculo.marca + ", color=" + vehiculo.color + ", valorComercial=" + vehiculo.valorComercial +", Tipo de Vehiculo: " +vehiculo.tipo +", Fecha de parqueo: " +vehiculo.fecha.format(dtf) + "}";
     }
     public static String toStringVehiculos(){
         String res = "";
@@ -92,7 +119,7 @@ public class Vehiculo {
         return c;
     }
     public String toString() {
-        return "Vehiculo{" + "placa=" + this.placa + ", marca=" + this.marca + ", color=" + this.color + ", valorComercial=" + this.valorComercial + '}';
+        return "Vehiculo{" + "placa=" + this.placa + ", marca=" + this.marca + ", color=" + this.color + ", valorComercial=" + this.valorComercial +", Tipo de vehiculo: "+this.tipo +"Fecha y hora de ingreso: "+this.fecha+'}';
     }
     
 }
